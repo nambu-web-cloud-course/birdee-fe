@@ -124,7 +124,8 @@ function Home() {
   const [showModal, setShowModal] = useState(false);
 
   const [selectedDiaryId, setSelectedDiaryId] = useState(null);
-
+  const [lastId, setLastId] = useState(null);
+  const [firstId, setFirstId] = useState(null);
   const setInviteList = useSetRecoilState(inviteListState);
 
   useEffect(() => {
@@ -134,16 +135,27 @@ function Home() {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
+            params: {
+            lastId: lastId,
+            firstId: firstId
+          },
         });
 
-        setDiaries(response.data.data.Diaries);
+        if(response.data.result !== null){
+          setDiaries(response.data.result);
+          console.log(response.data.result);
+        }
+        
+    
+        
       } catch (error) {
         console.error("fetch 오류:", error);
       }
     };
 
     fetchData();
-  }, [showModal]);
+  }, [showModal, lastId, firstId]);
+
 
   const onBtnClick = (mode) => {
     if (showBtn === mode) {
@@ -279,6 +291,8 @@ function Home() {
             />
           </svg>
         </StrokeBtn>
+        <StrokeBtn onClick={() => { setFirstId(diaries[0]?.id); setLastId(null)}}>이전 페이지</StrokeBtn>
+        <StrokeBtn onClick={() => {setLastId(diaries[diaries.length - 1]?.id); setFirstId(null)}}>다음 페이지</StrokeBtn>
       </BtnWrapper>
 
       <ContentBox>
